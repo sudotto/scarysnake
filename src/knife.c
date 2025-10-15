@@ -12,23 +12,24 @@
 
 #include "knife.h"
 
-Knife new_knife(Game* game, int sx, int sy, int tx, int ty, int id){ // s=start t=target
+Knife new_knife(Game* game, int sx, int sy, int tx, int ty, Knife* knives){ // s=start t=target
 	Knife knife;
 	knife.init = 1;
-	knife.id = 1;
 	knife.sprite = new_img(game->rend, "assets/knife.png", 0);
 	knife.x = sx;
 	knife.y = sy;
 	knife.w = 25;
 	knife.h = 50;
+	knife.life = 50;
 	knife.dead = 0;
-	knife.spd = 1.1;
+	knife.spd = 5;
 	Point target = {tx, ty};
 	knife.target = target;
+	knife.id = push_knife(game, &knife, knives);
 	return knife;
 }
 
-void update_knife(Knife* knife, Game* game, Snake* snake){
+void update_knife(Knife* knife, Game* game, Snake* snake, Knife* knives){
 	float dx = knife->target.x - knife->x;
 	float dy = knife->target.y - knife->y;
 	float d = fabs(dist(dx, dy));
@@ -54,6 +55,13 @@ void update_knife(Knife* knife, Game* game, Snake* snake){
 			snake->len--;
 		}
 	}
+	knife->life--;
+	if(knife->life == 0){
+		knife->dead;
+	}
+	if(knife->dead){
+		pop_knife(knife, knives);
+	}
 }
 
 void render_knife(Knife* knife, Game* game){
@@ -61,40 +69,44 @@ void render_knife(Knife* knife, Game* game){
 	render_img(game->rend, &knife->sprite, knife->x, knife->y, knife->w, knife->h);
 }
 
-void push_knives(Game* game, Knife* knife, Knife* knives){
+int push_knife(Game* game, Knife* knife, Knife* knives){
 	for(int i = 0; i < 100; i++){
 		if(!knives[i].init){
 			knives[i] = *knife;
+			return i;
 		}
 	}
 }
 
-void pop_knives(Knife* knife, Knife* knives){
+void pop_knife(Knife* knife, Knife* knives){
 	for(int i = 0; i < 100; i++){
-		if(!knives[i].id == knife->id){
-			for(int j = i; j < 100; j++){
-				knives[i] = knives[i+1];
-			}
-			break;
+		if(knives[i].id == knife->id){
+			knives[i].init = 0;
 		}
 	}
 }
 
-Knife* new_knives(){
+Knife* new_knives(Game* game){
 	Knife* knives = malloc(sizeof(Knife) * 100);
 	for(int i = 0; i < 100; i++){
+		knives[i].sprite = new_img(game->rend, "assets/knife.png", 0);
 		knives[i].init = 0;
 	}
 }
 
 void update_knives(Knife* knives, Game* game, Snake* snake){
 	for(int i = 0; i < 100; i++){
-		update_knife(&knives[i], game, snake);
+		if(knives[i].init){
+			printf("init\n");
+			update_knife(&knives[i], game, snake, knives);
+		}
 	}
 }
 
 void render_knives(Knife* knives, Game* game){
 	for(int i = 0; i < 100; i++){
-		render_knife(&knives[i], game);
+		if(knives[i].init){
+			render_knife(&knives[i], game);
+		}
 	}
 }

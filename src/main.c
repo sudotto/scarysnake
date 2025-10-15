@@ -29,7 +29,7 @@ void menu(Gamestate* state, Game* game){
 	update_game(game);
 }
 
-void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango, Mob* mob){
+void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango, Mob* mob, Knife* knives){
 	if(*updates == 10){
 		update_snake(dog, game, mango);
 		if(dog->dead){
@@ -38,11 +38,13 @@ void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mang
 		update_apple(mango, game);
 		*updates = 0;
 	}
-	update_mob(mob, game, dog);
+	update_mob(mob, game, dog, knives);
+	update_knives(knives, game, dog);
 	clear_game(game, 0, 0, 0);
 	render_snake(dog, game);
 	render_apple(mango, game);
 	render_mob(mob, game);
+	render_knives(knives, game);
 	//render_game_cursor(&game, 32, 32);
 	update_game(game);
 	*updates += 1;
@@ -62,7 +64,7 @@ int main(){
 	Snake dog = new_snake(&game);
 	Apple mango = new_apple(&game);
 	Mob test = new_mob(&game);
-	Knife* knives = new_knives();
+	Knife* knives = new_knives(&game);
 	Sound click = new_sound("assets/click.wav");
 	Sound music = new_sound("assets/music.wav");
 	Sound loser = new_sound("assets/loser.wav");
@@ -107,7 +109,7 @@ int main(){
 				menu(&state, &game);
 				break;
 			case PLAYING:
-				playing(&state, &updates, &dog, &game, &mango, &test);
+				playing(&state, &updates, &dog, &game, &mango, &test, knives);
 				break;
 			case DEAD:
 				dead(&state, &game);
@@ -115,5 +117,4 @@ int main(){
 		}
 		cap_game_framerate(&game, 60);
 	}
-	destroy_game(&game);
 }
