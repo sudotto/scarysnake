@@ -8,6 +8,7 @@
 #include "otto-game.h"
 
 #include "snake.h"
+#include "knife.h"
 
 #include "mob.h"
 
@@ -19,11 +20,12 @@ Mob new_mob(Game* game){
 	mob.w = 25;
 	mob.h = 50;
 	mob.dead = 0;
-	mob.spd = 1.1;
+	mob.spd = 1;
+	mob.cooldown = 300;
 	return mob;
 }
 
-void update_mob(Mob* mob, Game* game, Snake* snake){
+void update_mob(Mob* mob, Game* game, Snake* snake, Knife* knives){
 	float dx = snake->x - mob->x;
 	float dy = snake->y - mob->y;
 	float d = fabs(dist(dx, dy));
@@ -32,9 +34,13 @@ void update_mob(Mob* mob, Game* game, Snake* snake){
 	dy *= scale;
 	mob->x += dx;
 	mob->y += dy;
-	//if(mob->x == snake->x && mob->y == snake->y){
-	//	mob->dead = true;
-	//}
+	printf("%i\n", mob->cooldown);
+	if(mob->cooldown == 0){
+		//new_knife(game, mob->x, mob->y, snake->x, snake->y, knives);
+		mob->cooldown = 300;
+		printf("knife");
+	}
+	mob->cooldown--;
 	Rect snake_r = {snake->x, snake->y, 20, 20};
 	Rect mob_r = {mob->x, mob->y, mob->w, mob->h};
 	if(rect_in_rect(snake_r, mob_r)){

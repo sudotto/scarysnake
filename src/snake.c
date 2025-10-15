@@ -98,6 +98,10 @@ void update_snake(Snake* snake, Game* game, Apple* apple){
 		snake->dead = 1;
 		return;
 	}
+	if(snake->len <= 0){
+		snake->dead = 1;
+		return;
+	}
 	int pre_x = snake->x;
 	int pre_y = snake->y;
 	int pre_face = snake->facing;
