@@ -39,6 +39,7 @@ typedef struct {
 
 bool point_in_rect(Point point, Rect rect);
 bool rect_in_rect(Rect rect, Rect rect2);
+int dist(int x_dist, int y_dist);
 
 ///////////////////
 // CAMERA
