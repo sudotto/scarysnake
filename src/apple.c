@@ -17,8 +17,8 @@ int better_rand(int min, int max){
 Apple new_apple(Game* game){
 	Apple apple;
 	apple.sprite = new_img(game->rend, "assets/apple.png", 1);
-	apple.x = better_rand(0,44);
-	apple.y = better_rand(0,29);
+	apple.x = better_rand(0,44)*20;
+	apple.y = better_rand(0,29)*20;
 	apple.eaten = 0;
 	return apple;
 }
@@ -31,5 +31,5 @@ void update_apple(Apple* apple, Game* game){
 
 void render_apple(Apple* apple, Game* game){
 	int scale = 20;
-	render_img(game->rend, &apple->sprite, apple->x * scale, apple->y * scale, scale, scale);
+	render_img(game->rend, &apple->sprite, apple->x, apple->y, scale, scale);
 }

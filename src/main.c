@@ -12,6 +12,7 @@
 
 #include "snake.h"
 #include "apple.h"
+#include "mob.h"
 
 typedef enum {
 	MENU,
@@ -27,7 +28,7 @@ void menu(Gamestate* state, Game* game){
 	update_game(game);
 }
 
-void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango){
+void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango, Mob* mob){
 	if(*updates == 10){
 		update_snake(dog, game, mango);
 		if(dog->dead){
@@ -36,9 +37,11 @@ void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mang
 		update_apple(mango, game);
 		*updates = 0;
 	}
+	update_mob(mob, game, dog);
 	clear_game(game, 0, 0, 0);
 	render_snake(dog, game);
 	render_apple(mango, game);
+	render_mob(mob, game);
 	//render_game_cursor(&game, 32, 32);
 	update_game(game);
 	*updates += 1;
@@ -57,6 +60,8 @@ int main(){
 	Game game = new_game("snake if it was scarier", 900, 600);
 	Snake dog = new_snake(&game);
 	Apple mango = new_apple(&game);
+	Mob test = new_mob(&game);
+	Sound click = new_sound("assets/click.wav");
 	Sound music = new_sound("assets/music.wav");
 	Sound loser = new_sound("assets/loser.wav");
 	Gamestate state = MENU;
@@ -66,15 +71,20 @@ int main(){
 		while(get_game_events(&game)){
 			switch(game.event.type){
 				case SDL_EVENT_QUIT:
-					game.running = false;
+					game.running = 0;
 					break;
+			}
+			if(game.keystates[SDL_SCANCODE_ESCAPE]){
+				game.running = 0;
 			}
 			switch(state){
 				case MENU:
 					play_sound(&music);
 					if(game.keystates[SDL_SCANCODE_SPACE]){
+						play_sound(&click);
 						stop_sound(&music);
 						state = PLAYING;
+						dog = new_snake(&game);
 					}
 					break;
 				case PLAYING:
@@ -83,6 +93,7 @@ int main(){
 				case DEAD:
 					play_sound(&loser);
 					if(game.keystates[SDL_SCANCODE_SPACE]){
+						play_sound(&click);
 						stop_sound(&loser);
 						state = MENU;
 					}
@@ -94,7 +105,7 @@ int main(){
 				menu(&state, &game);
 				break;
 			case PLAYING:
-				playing(&state, &updates, &dog, &game, &mango);
+				playing(&state, &updates, &dog, &game, &mango, &test);
 				break;
 			case DEAD:
 				dead(&state, &game);

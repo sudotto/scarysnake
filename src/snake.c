@@ -42,9 +42,9 @@ void update_tail(Tail* tail, Game* game){
 
 void render_tail(Tail* tail, Game* game, int scale, int last){
 	if(last){
-		render_img(game->rend, &tail->end_sprite, tail->x * scale, tail->y * scale, scale, scale);
+		render_img(game->rend, &tail->end_sprite, tail->x, tail->y, scale, scale);
 	} else {
-		render_img(game->rend, &tail->sprite, tail->x * scale, tail->y * scale, scale, scale);
+		render_img(game->rend, &tail->sprite, tail->x, tail->y, scale, scale);
 	}
 }
 
@@ -94,7 +94,7 @@ void update_snake(Snake* snake, Game* game, Apple* apple){
 		snake->len++;
 		apple->eaten = 1;
 	}
-	if(snake->x < 0 || snake->x >= 45 || snake->y < 0 || snake->y >= 30){
+	if(snake->x < 0 || snake->x >= 900 || snake->y < 0 || snake->y >= 600){
 		snake->dead = 1;
 		return;
 	}
@@ -103,19 +103,19 @@ void update_snake(Snake* snake, Game* game, Apple* apple){
 	int pre_face = snake->facing;
 	switch(snake->facing){
 		case UP:
-			snake->y -= 1;
+			snake->y -= 20;
 			rotate_img(&snake->sprite, 180);
 			break;
 		case DOWN:
-			snake->y += 1;
+			snake->y += 20;
 			rotate_img(&snake->sprite, 0);
 			break;
 		case LEFT:
-			snake->x -= 1;
+			snake->x -= 20;
 			rotate_img(&snake->sprite, 90);
 			break;
 		case RIGHT:
-			snake->x += 1;
+			snake->x += 20;
 			rotate_img(&snake->sprite, 270);
 			break;
 	}
@@ -142,7 +142,7 @@ void update_snake(Snake* snake, Game* game, Apple* apple){
 
 void render_snake(Snake* snake, Game* game){
 	int scale = 20;
-	render_img(game->rend, &snake->sprite, snake->x * scale, snake->y * scale, scale, scale);
+	render_img(game->rend, &snake->sprite, snake->x, snake->y, scale, scale);
 	for(int i = 0; i < snake->len; i++){
 		int last = 0;
 		if(i == snake->len - 1){

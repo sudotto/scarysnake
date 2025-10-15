@@ -172,13 +172,13 @@ Sound new_sound(char* filename){
 	Sound sound;
 	SDL_LoadWAV(filename, &sound.spec, &sound.wav_data, &sound.wav_data_len);
 	sound.stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &sound.spec, NULL, NULL);
-	SDL_ResumeAudioStreamDevice(sound.stream);
 	return sound;
 }
 
 void play_sound(Sound* sound){
 	if(SDL_GetAudioStreamQueued(sound->stream) < (int)sound->wav_data_len){
 		SDL_PutAudioStreamData(sound->stream, sound->wav_data, sound->wav_data_len);
+		SDL_ResumeAudioStreamDevice(sound->stream);
 	}
 }
 
