@@ -11,16 +11,12 @@
 
 #include "mob.h"
 
-int dist(int x_dist, int y_dist){
-	return sqrt((pow(x_dist, 2) + pow(y_dist, 2)));
-}
-
 Mob new_mob(Game* game){
 	Mob mob;
 	mob.sprite = new_img(game->rend, "assets/spooky_monster.png", 0);
 	mob.x = 100;
 	mob.y = 100;
-	mob.w = 50;
+	mob.w = 25;
 	mob.h = 50;
 	mob.dead = 0;
 	mob.spd = 1.1;
@@ -36,17 +32,17 @@ void update_mob(Mob* mob, Game* game, Snake* snake){
 	dy *= scale;
 	mob->x += dx;
 	mob->y += dy;
-	if(mob->x == snake->x && mob->y == snake->y){
-		mob->dead = true;
-	}
-	Point snake_p = {snake->x, snake->y};
+	//if(mob->x == snake->x && mob->y == snake->y){
+	//	mob->dead = true;
+	//}
+	Rect snake_r = {snake->x, snake->y, 20, 20};
 	Rect mob_r = {mob->x, mob->y, mob->w, mob->h};
-	if(point_in_rect(snake_p, mob_r)){
+	if(rect_in_rect(snake_r, mob_r)){
 		snake->dead = 1;
 	}
 	for(int i = 0; i < snake->len; i++){
-		Point tail_p = {snake->tails[i].x, snake->tails[i].y};
-		if(point_in_rect(tail_p, mob_r)){
+		Rect tail_r = {snake->tails[i].x, snake->tails[i].y, 20, 20};
+		if(rect_in_rect(tail_r, mob_r)){
 			snake->dead = 1;
 		}
 	}

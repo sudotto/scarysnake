@@ -59,6 +59,10 @@ bool rect_in_rect(Rect rect, Rect rect2){
 	return false;
 }
 
+int dist(int x_dist, int y_dist){
+	return sqrt((pow(x_dist, 2) + pow(y_dist, 2)));
+}
+
 ///////////////////
 // CAMERA
 ///////////////////
