@@ -57,6 +57,7 @@ Snake new_snake(Game* game){
 	snake.facing = DOWN;
 	snake.len = 1;
 	snake.dead = 0;
+	snake.paralyse = 0;
 	int pre_x = snake.x;
 	int pre_y = snake.y;
 	for(int i = 0; i < 50; i++){
@@ -66,6 +67,9 @@ Snake new_snake(Game* game){
 }
 
 void control_snake(Snake* snake, Game* game){
+	if(snake->paralyse){
+		return;
+	}
 	if(game->keystates[SDL_SCANCODE_W]){
 		if(snake->facing != DOWN){
 			snake->facing = UP;
@@ -86,6 +90,9 @@ void control_snake(Snake* snake, Game* game){
 }
 
 void update_snake(Snake* snake, Game* game, Apple* apple){
+	if(snake->paralyse){
+		return;
+	}
 	if(snake->x == apple->x && snake->y == apple->y){
 		play_sound(&snake->chomp);
 		snake->len++;

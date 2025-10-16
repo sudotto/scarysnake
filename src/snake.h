@@ -41,6 +41,7 @@ typedef struct {
 	int len;
 	Tail tails[50];
 	int dead;
+	int paralyse;
 } Snake;
 
 Snake new_snake(Game* game);

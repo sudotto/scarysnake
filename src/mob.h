@@ -14,6 +14,7 @@
 
 typedef struct {
 	Img sprite;
+	Img jumpscare_screen;
 	float x;
 	float y;
 	float w;
@@ -21,6 +22,7 @@ typedef struct {
 	int dead;
 	int spd;
 	int cooldown;
+	int jumpscare;
 } Mob;
 
 Mob new_mob(Game* game);

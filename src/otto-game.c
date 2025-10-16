@@ -115,6 +115,10 @@ void recolor_img(Img* img, SDL_Renderer* rend, SDL_Color target, SDL_Color repla
 	img->tex = SDL_CreateTextureFromSurface(rend, img->surf);
 }
 
+void set_img_alpha(Img* img, int alpha){
+	SDL_SetTextureAlphaMod(img->tex, alpha);
+}
+
 void render_img(SDL_Renderer* rend, Img *img, int x, int y, int w, int h){
 	SDL_FRect dest;
 	dest.x = x;
@@ -180,14 +184,24 @@ Sound new_sound(char* filename){
 }
 
 void play_sound(Sound* sound){
+	SDL_ResumeAudioStreamDevice(sound->stream);
 	if(SDL_GetAudioStreamQueued(sound->stream) < (int)sound->wav_data_len){
 		SDL_PutAudioStreamData(sound->stream, sound->wav_data, sound->wav_data_len);
-		SDL_ResumeAudioStreamDevice(sound->stream);
 	}
 }
 
 void stop_sound(Sound* sound){
 	SDL_PauseAudioStreamDevice(sound->stream);
+}
+
+void quick_sound(char* filename){
+	uint8_t* wav_data;
+	uint32_t wav_data_len;
+	SDL_AudioSpec spec;
+	SDL_LoadWAV(filename, &spec, &wav_data, &wav_data_len);
+	SDL_AudioStream* stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
+	SDL_PutAudioStreamData(stream, wav_data, wav_data_len);
+	SDL_ResumeAudioStreamDevice(stream);
 }
 
 ///////////////////
