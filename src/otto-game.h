@@ -72,6 +72,7 @@ void crop_img(Img* img, int x, int y, int w, int h);
 void flip_img(Img* img, bool flipped);
 void rotate_img(Img* img, int angle);
 void recolor_img(Img* img, SDL_Renderer* rend, SDL_Color target, SDL_Color replace);
+void set_img_alpha(Img* img, int alpha);
 void render_img(SDL_Renderer* rend, Img *img, int x, int y, int w, int h);
 
 ///////////////////
@@ -102,6 +103,7 @@ typedef struct {
 Sound new_sound(char* filename);
 void play_sound(Sound* sound);
 void stop_sound(Sound* sound);
+void quick_sound(char* filename);
 
 ///////////////////
 // GAME

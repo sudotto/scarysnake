@@ -14,6 +14,7 @@
 #include "apple.h"
 #include "mob.h"
 #include "knife.h"
+#include "flash.h"
 
 typedef enum {
 	MENU,
@@ -29,7 +30,7 @@ void menu(Gamestate* state, Game* game){
 	update_game(game);
 }
 
-void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango, Mob* mob, Knife* knives){
+void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango, Mob* mob, Knife* knives, Flash* flash){
 	if(*updates == 10){
 		update_snake(dog, game, mango);
 		if(dog->dead){
@@ -40,12 +41,18 @@ void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mang
 	}
 	update_mob(mob, game, dog, knives);
 	update_knives(knives, game, dog);
+	update_flash(flash, game);
+
 	clear_game(game, 0, 0, 0);
+
 	render_snake(dog, game);
 	render_apple(mango, game);
 	render_mob(mob, game);
 	render_knives(knives, game);
-	//render_game_cursor(&game, 32, 32);
+	if(!mob->jumpscare){
+		render_flash(flash, dog->x, dog->y, dog->sprite.angle, game);
+	}
+
 	update_game(game);
 	*updates += 1;
 }
@@ -61,9 +68,10 @@ void dead(Gamestate* state, Game* game){
 int main(){
 	srand(time(0));
 	Game game = new_game("snake if it was scarier", 900, 600);
-	Snake dog = new_snake(&game);
-	Apple mango = new_apple(&game);
-	Mob test = new_mob(&game);
+	Flash flash;
+	Snake dog;
+	Apple mango;
+	Mob monster;
 	Knife knives[100];
 	Sound click = new_sound("assets/click.wav");
 	Sound music = new_sound("assets/music.wav");
@@ -83,12 +91,17 @@ int main(){
 			}
 			switch(state){
 				case MENU:
+					//if(SDL_GetAudioStreamQueued(music.stream) < (int)music.wav_data_len){
 					play_sound(&music);
+					//}
 					if(game.keystates[SDL_SCANCODE_SPACE]){
 						play_sound(&click);
 						stop_sound(&music);
 						state = PLAYING;
 						dog = new_snake(&game);
+						mango = new_apple(&game);
+						monster = new_mob(&game);
+						flash = new_flash(&game);
 					}
 					break;
 				case PLAYING:
@@ -109,7 +122,7 @@ int main(){
 				menu(&state, &game);
 				break;
 			case PLAYING:
-				playing(&state, &updates, &dog, &game, &mango, &test, knives);
+				playing(&state, &updates, &dog, &game, &mango, &monster, knives, &flash);
 				break;
 			case DEAD:
 				dead(&state, &game);

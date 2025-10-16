@@ -15,6 +15,7 @@
 Mob new_mob(Game* game){
 	Mob mob;
 	mob.sprite = new_img(game->rend, "assets/spooky_monster.png", 0);
+	mob.jumpscare_screen = new_img(game->rend, "assets/jumpscare.png", 0);
 	mob.x = 800;
 	mob.y = 500;
 	mob.w = 25;
@@ -22,6 +23,7 @@ Mob new_mob(Game* game){
 	mob.dead = 0;
 	mob.spd = 1;
 	mob.cooldown = 100;
+	mob.jumpscare = 0;
 	return mob;
 }
 
@@ -42,16 +44,29 @@ void update_mob(Mob* mob, Game* game, Snake* snake, Knife* knives){
 	Rect snake_r = {snake->x, snake->y, 20, 20};
 	Rect mob_r = {mob->x, mob->y, mob->w, mob->h};
 	if(rect_in_rect(snake_r, mob_r)){
-		snake->dead = 1;
+		quick_sound("assets/jumpscare.wav");
+		snake->paralyse = 1;
+		mob->jumpscare = 100;
 	}
 	for(int i = 0; i < snake->len; i++){
 		Rect tail_r = {snake->tails[i].x, snake->tails[i].y, 20, 20};
 		if(rect_in_rect(tail_r, mob_r)){
+			snake->paralyse = 1;
+			mob->jumpscare = 100;
+		}
+	}
+	if(mob->jumpscare){
+		mob->jumpscare--;
+		if(!mob->jumpscare){
 			snake->dead = 1;
 		}
 	}
 }
 
 void render_mob(Mob* mob, Game* game){
-	render_img(game->rend, &mob->sprite, mob->x, mob->y, mob->w, mob->h);
+	if(mob->jumpscare){
+		render_img(game->rend, &mob->jumpscare_screen, 0, 0, 900, 600);
+	} else {
+		render_img(game->rend, &mob->sprite, mob->x, mob->y, mob->w, mob->h);
+	}
 }
