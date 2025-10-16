@@ -15,13 +15,13 @@
 Mob new_mob(Game* game){
 	Mob mob;
 	mob.sprite = new_img(game->rend, "assets/spooky_monster.png", 0);
-	mob.x = 100;
-	mob.y = 100;
+	mob.x = 800;
+	mob.y = 500;
 	mob.w = 25;
 	mob.h = 50;
 	mob.dead = 0;
 	mob.spd = 1;
-	mob.cooldown = 300;
+	mob.cooldown = 100;
 	return mob;
 }
 
@@ -34,11 +34,9 @@ void update_mob(Mob* mob, Game* game, Snake* snake, Knife* knives){
 	dy *= scale;
 	mob->x += dx;
 	mob->y += dy;
-	printf("%i\n", mob->cooldown);
 	if(mob->cooldown == 0){
-		//new_knife(game, mob->x, mob->y, snake->x, snake->y, knives);
+		new_knife(game, mob->x, mob->y, snake->x, snake->y, knives);
 		mob->cooldown = 300;
-		printf("knife");
 	}
 	mob->cooldown--;
 	Rect snake_r = {snake->x, snake->y, 20, 20};
