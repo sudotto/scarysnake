@@ -64,7 +64,7 @@ int main(){
 	Snake dog = new_snake(&game);
 	Apple mango = new_apple(&game);
 	Mob test = new_mob(&game);
-	Knife* knives = new_knives(&game);
+	Knife knives[100];
 	Sound click = new_sound("assets/click.wav");
 	Sound music = new_sound("assets/music.wav");
 	Sound loser = new_sound("assets/loser.wav");

@@ -82,9 +82,6 @@ void control_snake(Snake* snake, Game* game){
 		if(snake->facing != LEFT){
 			snake->facing = RIGHT;
 		}
-	} else if(game->keystates[SDL_SCANCODE_P]){
-		snake->len++;
-		printf("%i\n", snake->len);
 	}
 }
 
