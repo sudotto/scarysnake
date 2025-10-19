@@ -10,6 +10,7 @@
 #include "otto-game.h"
 
 #include "apple.h"
+#include "flash.h"
 
 typedef enum {
 	UP,
@@ -42,11 +43,12 @@ typedef struct {
 	Tail tails[50];
 	int dead;
 	int paralyse;
+	Flash flash;
 } Snake;
 
 Snake new_snake(Game* game);
 void control_snake(Snake* snake, Game* game);
-void update_snake(Snake* snake, Game* game, Apple* apple);
+void update_snake(Snake* snake, Game* game, Apple* apple, Battery* battery);
 void render_snake(Snake* snake, Game* game);
 
 #endif 

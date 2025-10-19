@@ -10,15 +10,11 @@
 
 #include "apple.h"
 
-int better_rand(int min, int max){
-	return rand() % (max - min + 1) + min;
-}
-
 Apple new_apple(Game* game){
 	Apple apple;
 	apple.sprite = new_img(game->rend, "assets/apple.png", 1);
-	apple.x = better_rand(0,44)*20;
-	apple.y = better_rand(0,29)*20;
+	apple.x = gen_rand(0,44)*20;
+	apple.y = gen_rand(0,29)*20;
 	apple.eaten = 0;
 	return apple;
 }

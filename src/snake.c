@@ -6,6 +6,7 @@
 
 #include "otto-game.h"
 #include "apple.h"
+#include "flash.h"
 
 #include "snake.h"
 
@@ -58,6 +59,7 @@ Snake new_snake(Game* game){
 	snake.len = 1;
 	snake.dead = 0;
 	snake.paralyse = 0;
+	snake.flash = new_flash(game);
 	int pre_x = snake.x;
 	int pre_y = snake.y;
 	for(int i = 0; i < 50; i++){
@@ -89,7 +91,8 @@ void control_snake(Snake* snake, Game* game){
 	}
 }
 
-void update_snake(Snake* snake, Game* game, Apple* apple){
+void update_snake(Snake* snake, Game* game, Apple* apple, Battery* battery){
+	update_flash(&snake->flash, game);
 	if(snake->paralyse){
 		return;
 	}
@@ -97,6 +100,11 @@ void update_snake(Snake* snake, Game* game, Apple* apple){
 		play_sound(&snake->chomp);
 		snake->len++;
 		apple->eaten = 1;
+	}
+	if(snake->x == battery->x && snake->y == battery->y){
+		play_sound(&snake->chomp);
+		snake->flash.batt = snake->flash.max; // i should've just passed flash into battery_update I KNOW!!!
+		battery->gotten = 1;
 	}
 	if(snake->x < 0 || snake->x >= 900 || snake->y < 0 || snake->y >= 600){
 		snake->dead = 1;

@@ -8,6 +8,7 @@
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_audio.h>
 #include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "otto-game.h"
 #include "otto-game_info.h"
@@ -205,6 +206,41 @@ void quick_sound(char* filename){
 }
 
 ///////////////////
+// TEXT
+///////////////////
+
+Text new_text(SDL_Renderer* rend, char* msg){
+	Text text;
+	text.len = strlen(msg);
+	SDL_Color clr = {255, 255, 255, 255};
+	TTF_Font* font = TTF_OpenFont("assets/font.ttf", 100);
+	text.surf = TTF_RenderText_Solid(font, msg, text.len, clr);
+	text.tex = SDL_CreateTextureFromSurface(rend, text.surf);
+	TTF_CloseFont(font);
+	return text;
+}
+
+void render_text(Text* text, SDL_Renderer* rend, int x, int y, int c_w, int c_h){
+	SDL_FRect dest;
+	dest.x = x;
+	dest.y = y;
+	dest.w = c_w * text->len;
+	dest.h = c_h;
+	/*if(text->camera_affected){
+		dest.x -= camera.x;
+		dest.y -= camera.y;
+		dest.x *= camera.scale;
+		dest.y *= camera.scale;
+		dest.w *= camera.scale;
+		dest.h *= camera.scale;
+	}
+	if(x < 0 && y < 0 && x > GAME_W && y > GAME_H){
+		return;
+	}*/ 
+	SDL_RenderTextureRotated(rend, text->tex, NULL, &dest, 0, NULL, 0);
+}
+
+///////////////////
 // GAME
 ///////////////////
 
@@ -212,8 +248,10 @@ Game new_game(char* title, int w, int h){
 	Game game = {0};
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	TTF_Init();
 	game.win = SDL_CreateWindow(title, w, h, 0);
 	game.rend = SDL_CreateRenderer(game.win, NULL);
+	//game.text_eng = TTF_CreateRendererTextEngine(game.rend);
 
 	game.icon = new_img(game.rend, "assets/icon.png", false);
 	game.cursor = new_img(game.rend, "assets/cursor.png", false);
