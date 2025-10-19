@@ -2,11 +2,22 @@
 #define FLASH
 
 #include "otto-game.h"
-#include "snake.h"
+
+typedef struct {
+	Img sprite;
+	int x;
+	int y;
+	int gotten;
+} Battery;
+
+Battery new_battery(Game* game);
+void update_battery(Battery* battery, Game* game);
+void render_battery(Battery* battery, Game* game);
 
 typedef struct {
 	Img overlay;
 	int batt;
+	int max;
 } Flash;
 
 Flash new_flash(Game* game);

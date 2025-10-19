@@ -8,6 +8,7 @@
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 // Otto-game:
 // because sdl is a shitty esoteric inbred pile of diseased badly documented gas soaked and burning shit
@@ -106,12 +107,26 @@ void stop_sound(Sound* sound);
 void quick_sound(char* filename);
 
 ///////////////////
+// TEXT
+///////////////////
+
+typedef struct {
+	int len;
+	SDL_Surface* surf;
+	SDL_Texture* tex;
+} Text;
+
+Text new_text(SDL_Renderer* rend, char* msg);
+void render_text(Text* text, SDL_Renderer* rend, int x, int y, int c_w, int c_h);
+
+///////////////////
 // GAME
 ///////////////////
 
 typedef struct {
 	SDL_Window* win;
 	SDL_Renderer* rend;
+	//TTF_TextEngine* text_eng;
 	SDL_Event event;
 	Img icon;
 	Img cursor;

@@ -2,8 +2,10 @@
 #include <stdint.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3/SDL_audio.h>
@@ -30,29 +32,30 @@ void menu(Gamestate* state, Game* game){
 	update_game(game);
 }
 
-void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango, Mob* mob, Knife* knives, Flash* flash){
+void playing(Gamestate* state, int* updates, Snake* dog, Game* game, Apple* mango, Mob* mob, Knife* knives, Flash* flash, Battery* battery){
 	if(*updates == 10){
-		update_snake(dog, game, mango);
+		update_snake(dog, game, mango, battery);
 		if(dog->dead){
 			*state = DEAD;
 		}
 		update_apple(mango, game);
+		update_battery(battery, game);
 		*updates = 0;
 	}
 	update_mob(mob, game, dog, knives);
 	update_knives(knives, game, dog);
-	update_flash(flash, game);
 
 	clear_game(game, 0, 0, 0);
 
 	render_snake(dog, game);
 	render_apple(mango, game);
-	render_mob(mob, game);
+	render_battery(battery, game);
 	render_knives(knives, game);
+	render_mob(mob, game);
 	if(!mob->jumpscare){
-		render_flash(flash, dog->x, dog->y, dog->sprite.angle, game);
+		render_flash(&dog->flash, dog->x, dog->y, dog->sprite.angle, game);
+		render_bar(game->rend, dog->flash.batt / 4, dog->flash.max / 4, 10, 10, dog->flash.max / 4, 12);
 	}
-
 	update_game(game);
 	*updates += 1;
 }
@@ -72,6 +75,7 @@ int main(){
 	Snake dog;
 	Apple mango;
 	Mob monster;
+	Battery battery;
 	Knife knives[100];
 	Sound click = new_sound("assets/click.wav");
 	Sound music = new_sound("assets/music.wav");
@@ -102,6 +106,7 @@ int main(){
 						mango = new_apple(&game);
 						monster = new_mob(&game);
 						flash = new_flash(&game);
+						battery = new_battery(&game);
 					}
 					break;
 				case PLAYING:
@@ -122,7 +127,7 @@ int main(){
 				menu(&state, &game);
 				break;
 			case PLAYING:
-				playing(&state, &updates, &dog, &game, &mango, &monster, knives, &flash);
+				playing(&state, &updates, &dog, &game, &mango, &monster, knives, &flash, &battery);
 				break;
 			case DEAD:
 				dead(&state, &game);
