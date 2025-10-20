@@ -9,6 +9,7 @@
 
 #include "snake.h"
 #include "knife.h"
+#include "world.h"
 
 #include "mob.h"
 
@@ -16,18 +17,19 @@ Mob new_mob(Game* game){
 	Mob mob;
 	mob.sprite = new_img(game->rend, "assets/spooky_monster.png", 0);
 	mob.jumpscare_screen = new_img(game->rend, "assets/jumpscare.png", 0);
-	mob.x = 800;
-	mob.y = 500;
+	mob.jumpscare_sound = new_sound("assets/jumpscare.wav");
+	mob.x = 900;
+	mob.y = 600;
 	mob.w = 25;
 	mob.h = 50;
 	mob.dead = 0;
-	mob.spd = 1;
+	mob.spd = 0.5;
 	mob.cooldown = 100;
 	mob.jumpscare = 0;
 	return mob;
 }
 
-void update_mob(Mob* mob, Game* game, Snake* snake, Knife* knives){
+void update_mob(Mob* mob, Game* game, Snake* snake, Knife* knives, World* world){
 	float dx = snake->x - mob->x;
 	float dy = snake->y - mob->y;
 	float d = fabs(dist(dx, dy));
@@ -44,20 +46,21 @@ void update_mob(Mob* mob, Game* game, Snake* snake, Knife* knives){
 	Rect snake_r = {snake->x, snake->y, 20, 20};
 	Rect mob_r = {mob->x, mob->y, mob->w, mob->h};
 	if(rect_in_rect(snake_r, mob_r)){
-		quick_sound("assets/jumpscare.wav");
+		play_sound(&mob->jumpscare_sound);
 		snake->paralyse = 1;
-		mob->jumpscare = 100;
+		mob->jumpscare = 50;
 	}
 	for(int i = 0; i < snake->len; i++){
 		Rect tail_r = {snake->tails[i].x, snake->tails[i].y, 20, 20};
 		if(rect_in_rect(tail_r, mob_r)){
 			snake->paralyse = 1;
-			mob->jumpscare = 100;
+			mob->jumpscare = 50;
 		}
 	}
 	if(mob->jumpscare){
 		mob->jumpscare--;
 		if(!mob->jumpscare){
+			stop_sound(&mob->jumpscare_sound);
 			snake->dead = 1;
 		}
 	}

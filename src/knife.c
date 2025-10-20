@@ -9,6 +9,7 @@
 #include "otto-game.h"
 
 #include "snake.h"
+#include "world.h"
 
 #include "knife.h"
 
@@ -20,9 +21,16 @@ Knife new_knife(Game* game, int sx, int sy, int tx, int ty, Knife* knives){ // s
 	knife.y = sy;
 	knife.w = 25;
 	knife.h = 50;
+	knife.spd = 2;
+	knife.dx = tx - sx;
+	knife.dy = ty - sy;
+	float d = fabs(dist(knife.dx, knife.dy));
+	float scale = fabs(knife.spd / d);
+	knife.dx *= scale;
+	knife.dy *= scale;
+	knife.angle = (int)(atan2(knife.dy, knife.dx) * (180 / 3.14159));
 	knife.life = 512;
 	knife.dead = 0;
-	knife.spd = 2;
 	Point target = {tx, ty};
 	knife.target = target;
 	knife.id = 0;
@@ -30,28 +38,24 @@ Knife new_knife(Game* game, int sx, int sy, int tx, int ty, Knife* knives){ // s
 	return knife;
 }
 
-void update_knife(Knife* knife, Game* game, Snake* snake, Knife* knives){
+void update_knife(Knife* knife, Game* game, Snake* snake, Knife* knives, World* world){
+	knife->x += knife->dx;
+	knife->y += knife->dy;
 	knife->life--;
 	if(knife->life <= 0){
 		pop_knife(knife->id, knives);
+		return;
 	}
-	float dx = knife->target.x - knife->x;
-	float dy = knife->target.y - knife->y;
-	float d = fabs(dist(dx, dy));
-	float scale = fabs(knife->spd / d);
-	dx *= scale;
-	dy *= scale;
-	knife->x += dx;
-	knife->y += dy;
-	knife->angle = atan(dy/dx) * 180 / 3.14159;
+	if(world->blocks[(int)(knife->y/20)][(int)(knife->x/20)].solid){
+		pop_knife(knife->id, knives);
+		return;
+	}
 	Rect snake_r = {snake->x, snake->y, 20, 20};
 	Rect knife_r = {knife->x, knife->y, knife->w, knife->h};
-	if(knife->x == knife->target.x && knife->x == knife->target.y){
-		pop_knife(knife->id, knives);
-	}
 	if(rect_in_rect(snake_r, knife_r)){
 		pop_knife(knife->id, knives);
 		snake->len--;
+		return;
 	} else {
 		for(int i = 0; i < snake->len; i++){
 			Rect tail_r = {snake->tails[i].x, snake->tails[i].y, 20, 20};
@@ -97,10 +101,10 @@ Knife* new_knives(Game* game){
 	}
 }
 
-void update_knives(Knife* knives, Game* game, Snake* snake){
+void update_knives(Knife* knives, Game* game, Snake* snake, World* world){
 	for(int i = 0; i < 10; i++){
 		if(knives[i].init){
-			update_knife(&knives[i], game, snake, knives);
+			update_knife(&knives[i], game, snake, knives, world);
 		}
 	}
 }

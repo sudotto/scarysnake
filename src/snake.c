@@ -7,6 +7,7 @@
 #include "otto-game.h"
 #include "apple.h"
 #include "flash.h"
+#include "world.h"
 
 #include "snake.h"
 
@@ -53,8 +54,8 @@ Snake new_snake(Game* game){
 	Snake snake;
 	snake.sprite = new_img(game->rend, "assets/snake.png", 1);
 	snake.chomp = new_sound("assets/chomp.wav");
-	snake.x = 0;
-	snake.y = 0;
+	snake.x = 20;
+	snake.y = 20;
 	snake.facing = DOWN;
 	snake.len = 1;
 	snake.dead = 0;
@@ -91,27 +92,9 @@ void control_snake(Snake* snake, Game* game){
 	}
 }
 
-void update_snake(Snake* snake, Game* game, Apple* apple, Battery* battery){
+void update_snake(Snake* snake, Game* game, Apple* apple, Battery* battery, World* world){
 	update_flash(&snake->flash, game);
 	if(snake->paralyse){
-		return;
-	}
-	if(snake->x == apple->x && snake->y == apple->y){
-		play_sound(&snake->chomp);
-		snake->len++;
-		apple->eaten = 1;
-	}
-	if(snake->x == battery->x && snake->y == battery->y){
-		play_sound(&snake->chomp);
-		snake->flash.batt = snake->flash.max; // i should've just passed flash into battery_update I KNOW!!!
-		battery->gotten = 1;
-	}
-	if(snake->x < 0 || snake->x >= 900 || snake->y < 0 || snake->y >= 600){
-		snake->dead = 1;
-		return;
-	}
-	if(snake->len <= 0){
-		snake->dead = 1;
 		return;
 	}
 	int pre_x = snake->x;
@@ -153,6 +136,30 @@ void update_snake(Snake* snake, Game* game, Apple* apple, Battery* battery){
 			snake->dead = 1;
 			return;
 		}
+	}
+	if(snake->x == apple->x && snake->y == apple->y){
+		play_sound(&snake->chomp);
+		snake->len++;
+		apple->eaten = 1;
+	}
+	if(snake->x == battery->x && snake->y == battery->y){
+		play_sound(&snake->chomp);
+		snake->flash.batt = snake->flash.max; // i should've just passed flash into battery_update I KNOW!!!
+		battery->gotten = 1;
+	}
+	if(world->blocks[snake->y/20][snake->x/20].type == BLOCK_GENERATOR){
+		world->unlock = 1;
+	}
+	if(world->blocks[snake->y/20][snake->x/20].type == BLOCK_EXIT){
+		world->win = 1;
+	}
+	if(world->blocks[snake->y/20][snake->x/20].solid){
+		snake->dead = 1;
+		return;
+	}
+	if(snake->len <= 0){
+		snake->dead = 1;
+		return;
 	}
 }
 

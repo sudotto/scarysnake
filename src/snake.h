@@ -11,6 +11,7 @@
 
 #include "apple.h"
 #include "flash.h"
+#include "world.h"
 
 typedef enum {
 	UP,
@@ -48,7 +49,7 @@ typedef struct {
 
 Snake new_snake(Game* game);
 void control_snake(Snake* snake, Game* game);
-void update_snake(Snake* snake, Game* game, Apple* apple, Battery* battery);
+void update_snake(Snake* snake, Game* game, Apple* apple, Battery* battery, World* world);
 void render_snake(Snake* snake, Game* game);
 
 #endif 
