@@ -1,19 +1,26 @@
 #include "otto-game.h"
 
+#include "world.h"
+
 #include "flash.h"
 
-Battery new_battery(Game* game){
+Battery new_battery(Game* game, World* world){
 	Battery battery;
 	battery.sprite = new_img(game->rend, "assets/battery.png", 1);
-	battery.x = gen_rand(0,44)*20;
-	battery.y = gen_rand(0,29)*20;
+	while(1){
+		battery.x = gen_rand(0,44)*20;
+		battery.y = gen_rand(0,29)*20;
+		if(!world->blocks[battery.y/20][battery.x/20].solid){
+			break;
+		}
+	}
 	battery.gotten = 0;
 	return battery;
 }
 
-void update_battery(Battery* battery, Game* game){
+void update_battery(Battery* battery, Game* game, World* world){
 	if(battery->gotten){
-		*battery = new_battery(game);
+		*battery = new_battery(game, world);
 	}
 }
 

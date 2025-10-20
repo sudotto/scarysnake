@@ -9,6 +9,8 @@
 
 #include "otto-game.h"
 
+#include "world.h"
+
 typedef struct {
 	Img sprite;
 	int x;
@@ -16,8 +18,8 @@ typedef struct {
 	int eaten;
 } Apple;
 
-Apple new_apple(Game* game);
-void update_apple(Apple* apple, Game* game);
+Apple new_apple(Game* game, World* world);
+void update_apple(Apple* apple, Game* game, World* world);
 void render_apple(Apple* apple, Game* game);
 
 #endif

@@ -3,6 +3,8 @@
 
 #include "otto-game.h"
 
+#include "world.h"
+
 typedef struct {
 	Img sprite;
 	int x;
@@ -10,8 +12,8 @@ typedef struct {
 	int gotten;
 } Battery;
 
-Battery new_battery(Game* game);
-void update_battery(Battery* battery, Game* game);
+Battery new_battery(Game* game, World* world);
+void update_battery(Battery* battery, Game* game, World* world);
 void render_battery(Battery* battery, Game* game);
 
 typedef struct {

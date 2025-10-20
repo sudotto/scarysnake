@@ -33,7 +33,7 @@ void render_bar(SDL_Renderer* rend, float val, int max, int x, int y, int w, int
 ///////////////////
 
 int gen_rand(int min, int max){
-	return rand() % (max - min + 1);
+	return rand() % (max - min) + min;
 }
 
 bool point_in_rect(Point point, Rect rect){
@@ -286,8 +286,13 @@ void render_game_cursor(Game* game, int w, int h){
 	render_img(game->rend, &game->cursor, game->mouse_x, game->mouse_y, w, h);
 }
 
-void clear_game(Game* game, Uint8 r, Uint8 g, Uint8 b){
-	SDL_SetRenderDrawColor(game->rend, r, g, b, 1);
+void fill_game(Game* game, Uint8 r, Uint8 g, Uint8 b, Uint8 a){
+	SDL_SetRenderDrawBlendMode(game->rend, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(game->rend, r, g, b, a);
+}
+
+void clear_game(Game* game, Uint8 r, Uint8 g, Uint8 b, Uint8 a){
+	SDL_SetRenderDrawColor(game->rend, r, g, b, a);
 	SDL_RenderClear(game->rend);
 }
 
